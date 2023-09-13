@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template, redirect, url_for, session, flash
 from user.forms import RegisterUserForm, UserLogin
-from utils import form_field_pop, create_record__database, get_errors_field
+from utils import form_field_pop, create_record_database, get_errors_field
 from database.models import User
 from passlib.hash import pbkdf2_sha256
 from flask_login import login_user, login_required, current_user, logout_user
@@ -23,7 +23,7 @@ def register_user():
         if form.validate_on_submit():
             form_data = form_field_pop(form, "csrf_token", "confirm_password")
             form_data["password"] = pbkdf2_sha256.hash(form_data.get("password"))
-            record = create_record__database(User, form_data)
+            record = create_record_database(User, form_data)
             if record is not None:
                 login_user(record)
                 # устанавливаем сеанс с постоянным временем жизни
