@@ -97,5 +97,8 @@ class UserLogin(FlaskForm):
                 raise ValidationError(message="user with this name does not exist")
             if not pbkdf2_sha256.verify(password, user.password):
                 raise ValidationError(message="wrong password")
+        # сразу авторизовываем пользователя
+        # устанавливаем сеанс с постоянным временем жизни
+        # (даже если закроем бравзер пользователь останется авторизованным)
         login_user(user)
         session.permanent = True
