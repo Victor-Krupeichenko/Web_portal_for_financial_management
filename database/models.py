@@ -29,8 +29,8 @@ class Account(Base):
 
     __tablename__ = "accounts"
     id = Column(Integer, primary_key=True)
-    name = Column(String(), unique=True)
-    balance = Column(Float(), default=0.0, nullable=False)
+    name = Column(String(), nullable=False)
+    balance = Column(Float(), default=0.0, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     transactions = relationship("Transaction", back_populates="account", cascade="all, delete")
 
@@ -48,10 +48,10 @@ class Transaction(Base):
     transaction_type = Column(String(), nullable=False)
     amount = Column(Float(), nullable=False)
     date = Column(DateTime(), default=datetime.utcnow())
-    description = Column(String(), nullable=False)
+    description = Column(String(), nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    user = relationship("User", back_populates="transactions")
     account_id = Column(Integer, ForeignKey("accounts.id"))
+    user = relationship("User", back_populates="transactions")
     account = relationship("Account", back_populates="transactions")
 
     def __repr__(self):
