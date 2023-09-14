@@ -6,6 +6,7 @@ from database.connect_database import session_maker
 from database.models import User
 from account.routers import account_router
 from settings_cached import cache
+from transactions.routers import transactions_route
 
 app = Flask(__name__)
 
@@ -15,6 +16,7 @@ cache.init_app(app)
 app.secret_key = secret_key
 app.register_blueprint(user_router)
 app.register_blueprint(account_router)
+app.register_blueprint(transactions_route)
 
 # настройки для flask_login
 login_manager = LoginManager()
@@ -22,6 +24,17 @@ login_manager.init_app(app)
 login_manager.login_view = "user_router.user_login"
 login_manager.login_message = "you need to log in"
 login_manager.login_message_category = "info"
+
+
+@app.template_filter('format_time')
+def format_time(value):
+    """
+    Фильтр для форматирования времени
+    :param value: значение времени, которое необходимо отформатировать
+    :return: отформатированную строку времени в виде (день-месяц-год(полностью) часы:минуты)
+    """
+
+    return value.strftime('%d-%m-%Y %H:%M')
 
 
 @app.get("/")
