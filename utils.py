@@ -114,3 +114,50 @@ def delete_object(model, object_id):
             flash(message="entry deleted", category="info")
         except Exception as ex:
             error_database(ex)
+
+
+def create_transaction_and_update_account(model, form_data, obj):
+    """
+    Записывает транзакцию в базу данных и обновляет баланс конкретного account в таблице
+    :param model: Модель таблицы для transactions
+    :param form_data: данные транзакции которые ввел пользователь
+    :param obj: объект accounts баланс которого аккаунта
+    """
+
+    with session_maker() as db_session:
+        try:
+            transaction = model(**form_data)
+            db_session.add(transaction)
+            db_session.add(obj)
+            db_session.commit()
+        except Exception as ex:
+            db_session.rollback()
+            error_database(ex)
+
+
+def adding_required_fields_to_form(form_data, **fields):
+    """
+    Добавляет в форму необходимые поля перед сохранением её в базу данных
+    :param form_data: форма в которую необходимо добавить поля
+    :param fields: словарь полей
+    :return: возвращает форму со всеми необходимыми полями
+    """
+
+    for key, value in fields.items():
+        form_data.setdefault(key, value)
+    return form_data
+
+
+def get_all_list_transaction_to_account(model, account_id):
+    """
+    Получает все транзакции конкретноного аккаунта
+    :param model: модель из которой необходимо получить список объектов
+    :param account_id: id аккаунта для которого необходимо получить список объектов
+    """
+
+    with session_maker() as db_session:
+        try:
+            results = db_session.query(model).filter(model.account_id == account_id)
+            return results
+        except Exception as ex:
+            error_database(ex)
