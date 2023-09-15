@@ -7,6 +7,9 @@ from database.models import User
 from account.routers import account_router
 from settings_cached import cache
 from transactions.routers import transactions_route
+from analytics.routers import analytics_routes
+from user.user_settings_routes import user_settings_routes
+from errors.error_handlers import page_not_found, interval_error_server, handle_exception
 
 app = Flask(__name__)
 
@@ -17,6 +20,11 @@ app.secret_key = secret_key
 app.register_blueprint(user_router)
 app.register_blueprint(account_router)
 app.register_blueprint(transactions_route)
+app.register_blueprint(analytics_routes)
+app.register_blueprint(user_settings_routes)
+app.register_error_handler(404, page_not_found)
+app.register_error_handler(500, interval_error_server)
+app.register_error_handler(500, handle_exception)
 
 # настройки для flask_login
 login_manager = LoginManager()
@@ -43,8 +51,10 @@ def index():
     Главная страница
     :return: рендарит шаблон для главной странице
     """
-
-    return render_template("index.html")
+    response = {
+        "title": "Портала для управления финансами"
+    }
+    return render_template("index.html", response=response)
 
 
 @login_manager.user_loader
