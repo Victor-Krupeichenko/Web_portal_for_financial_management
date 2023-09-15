@@ -5,7 +5,7 @@ from wtforms.validators import Email, DataRequired, EqualTo, ValidationError, Le
 from database.connect_database import session_maker
 from database.models import User
 from passlib.hash import pbkdf2_sha256
-from flask_login import login_user
+from flask_login import login_user, current_user
 from flask import session
 
 
@@ -28,7 +28,9 @@ class RegisterUserForm(FlaskForm):
         render_kw={"placeholder": "Password"}
     )
     confirm_password = PasswordField(
-        "Pssword Confirm", validators=[DataRequired(), EqualTo("password", message="passwords don't match")],
+        "Pssword Confirm", validators=[
+            DataRequired(), EqualTo("password", message="passwords don't match")
+        ],
         render_kw={"placeholder": "Password confirm"}
     )
 
@@ -76,7 +78,7 @@ class UserLogin(FlaskForm):
             DataRequired(),
             Length(min=3, message="Invalid username")
         ],
-        render_kw={"palaceholder": "username"}
+        render_kw={"placeholder": "username"}
     )
     password = PasswordField(
         "Password", validators=[
@@ -102,3 +104,42 @@ class UserLogin(FlaskForm):
         # (даже если закроем бравзер пользователь останется авторизованным)
         login_user(user)
         session.permanent = True
+
+
+class PasswordChangeForm(FlaskForm):
+    """
+    Форма для изменения пароля
+    """
+
+    old_password = PasswordField(
+        "OldPassword", validators=[DataRequired()], render_kw={"placeholder": "old password"}
+    )
+    new_password = PasswordField(
+        "NewPassword", validators=[
+            DataRequired(), Length(min=5, message="password must consist of 5 or more characters"),
+        ],
+        render_kw={"placeholder": "new_password"}
+    )
+    confirm_new_password = PasswordField(
+        "ConfirmNewPassword", validators=[
+            DataRequired(), EqualTo("new_password", message="passwords don't match")
+        ],
+        render_kw={"placeholder": "confirm_new_password"}
+    )
+
+    def validate_old_password(self, old_password):
+        """
+        Валидация поля для старого пароля
+        :param old_password: старый пароль который ввел пользователь
+        """
+
+        if not pbkdf2_sha256.verify(old_password.data, current_user.password):
+            raise ValidationError(message="the old password was entered incorrectly")
+
+    def validate_new_password(self, new_password):
+        """
+        Валидация нового пароля
+        :param new_password: Новый пароль который ввел пользователь
+        """
+        if new_password.data.isalpha() or new_password.data.isdigit():
+            raise ValidationError(message="password must consist of letters and numbers")
