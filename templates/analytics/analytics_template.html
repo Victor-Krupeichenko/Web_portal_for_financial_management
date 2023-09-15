@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    {{ response.title }}
+{% endblock %}
+
+
+{% block content %}
+    {% if total_account %}
+        <h3>Количество открытых счетов: {{ total_account }}</h3>
+        <h3>Общий баланс по всем счетам составляет: {{ total_balance }}</h3>
+    {% else %}
+        <h3 class="text-center">У вас пока нет открытых счетов</h3>
+    {% endif %}
+{% endblock %}
