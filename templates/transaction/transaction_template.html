@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+	{{ response.title }}
+{% endblock %}
+
+
+{% block content %}
+    <h3>Balance: {{ response.account_balance }}</h3>
+    {% include "_inc/_form.html" %}
+{% endblock %}

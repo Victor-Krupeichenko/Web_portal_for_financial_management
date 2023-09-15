@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ response.title }}
+{% endblock %}
+
+
+
+{% block content %}
+    <table class="table table-hover text-center">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Описание</th>
+            <th scope="col">Тип транзакции</th>
+            <th scope="col">Дата</th>
+            <th scope="col">Средства</th>
+            <th scope="col">Счет</th>
+            <th scope="col">Удалить</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for result in results %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                {% if result.description %}
+                    <td style="text-align: left">{{ result.description }}</td>
+                {% else %}
+                    <td style="text-align: left">Описания нет</td>
+                {% endif %}
+                {% if result.transaction_type == "income" %}
+                    <td style="color: chartreuse">{{ result.transaction_type }}</td>
+                {% else %}
+                    <td style="color: red">{{ result.transaction_type }}</td>
+                {% endif %}
+                <td>{{ result.date|format_time }}</td>
+                <td>{{ result.amount }}</td>
+                <td>{{ result.account.name }}</td>
+                <td>
+                    <a href="{{ url_for('transactions_route.delete_transaction', id_transaction=result.id) }}"
+                       class="btn btn-danger btn-sm btn-block">Удалить</a>
+                </td>
+            </tr>
+        {% else %}
+            <h4 class="text-center">Транзакций пока нет</h4>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
