@@ -1,0 +1,32 @@
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    {% for field in form %}
+        <div class="field-form mb-2">
+            {% if response.account_edit %}
+                {{ field(class="form-control", value=result|attr(field.name)) }}
+            {% else %}
+                {{ field(class="form-control") }}
+            {% endif %}
+        </div>
+    {% endfor %}
+    <div class="d-grid gap-2">
+        {% if response.login %}
+            <button type="submit" class="btn btn-info">Login User</button>
+        {% elif response.register %}
+            <button type="submit" class="btn btn-info">Register User</button>
+        {% elif response.acount_create %}
+            <button type="submit" class="btn btn-info">Account Create</button>
+        {% elif response.account_edit %}
+            <button type="submit" class="btn btn-info">Edit Account</button>
+        {% elif response.consuption %}
+            <button type="submit" class="btn btn-info">Consuption</button>
+        {% elif response.income %}
+            <button type="submit" class="btn btn-info">Income</button>
+        {% elif response.change_password %}
+            <button type="submit" class="btn btn-info">Change Passord</button>
+        {% endif %}
+    </div>
+</form>
+
+
+
