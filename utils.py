@@ -1,5 +1,6 @@
 from database.connect_database import session_maker
 from flask import flash
+from sqlalchemy import func
 
 
 def error_database(ex):
@@ -161,3 +162,20 @@ def get_all_list_transaction_to_account(model, account_id):
             return results
         except Exception as ex:
             error_database(ex)
+
+
+def get_total_balance(model, current_user_id):
+    """
+    Получение общего баланса по всем счетам, и количество счетов
+    :param model: модель в которой находятся счета
+    :param current_user_id: id пользователя для которого необходимо найти общий баланс
+    :return: общий бананс
+    """
+
+    with session_maker() as db_session:
+        result = db_session.query(
+            func.sum(model.balance).label("total_balance"), func.count().label("total_count")
+        ).filter(model.user_id == current_user_id).first()
+        total_balance = result.total_balance
+        total_count = result.total_count
+        return total_balance, total_count
