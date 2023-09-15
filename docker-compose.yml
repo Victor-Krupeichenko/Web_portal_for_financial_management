@@ -1,0 +1,48 @@
+version: "3.7"
+services:
+  web_portal_database:
+    image: postgres:15.3
+    container_name: web_portal_database
+    env_file:
+      - .env
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    command: -p 1225
+    ports:
+      - "5432:1225"
+    restart: always
+    networks:
+      - web_portal_financial
+
+  web_portal_redis:
+    image: redis:7.2.1
+    container_name: web_portal_redis
+    command: --port 6112
+    ports:
+      - "6112:6112"
+    restart: always
+    depends_on:
+      - web_portal_database
+    networks:
+      - web_portal_financial
+
+  web_portal_app:
+    build:
+      context: .
+    env_file:
+      - .env
+    container_name: web_portal_app
+    command: [ "/web_portal/docker_start/start.sh" ]
+    ports:
+      - "5011:5011"
+    restart: always
+    depends_on:
+      - web_portal_database
+      - web_portal_redis
+    networks:
+      - web_portal_financial
+
+networks:
+  web_portal_financial:
+    name: web_portal_financial
+    driver: bridge
