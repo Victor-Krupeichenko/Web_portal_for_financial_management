@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ response.title }}
+{% endblock %}
+
+
+
+{% block content %}
+    <table class="table table-hover text-center">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Название</th>
+            <th scope="col">Баланс</th>
+            <th scope="col">Транзакции</th>
+            <th scope="col">Редактировать</th>
+            <th scope="col">Удалить</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for result in results %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ result.name }}</td>
+                <td>{{ result.balance }}</td>
+                <td>
+                    <a href="{{ url_for('transactions_route.consuption_account', account_id=result.id) }}"
+                       class="btn btn-warning btn-sm btn-block">consuption</a>
+                    <a href="{{ url_for('transactions_route.income_account', account_id=result.id) }}"
+                       class="btn btn-success btn-sm btn-block">income</a>
+                    <a href="{{ url_for('transactions_route.get_account_transactions_list', account_id=result.id) }}"
+                       class="btn btn-info btn-sm btn-block">all views transactions</a>
+                </td>
+                <td>
+                    <a href="{{ url_for('account_router.edit_account', account_id=result.id) }}"
+                       class="btn btn-primary btn-sm btn-block">Изменить</a>
+                </td>
+                <td>
+                    <a href="{{ url_for('account_router.delete_account', account_id=result.id) }}"
+                       class="btn btn-danger btn-sm btn-block">Удалить</a>
+                </td>
+            </tr>
+        {% else %}
+            <h4 class="text-center">Счетов пока нет</h4>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
